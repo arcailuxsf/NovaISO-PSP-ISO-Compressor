@@ -1,0 +1,11 @@
+# Ejecutables
+*.exe
+
+# Archivos de objeto y recursos compilados
+*.o
+*.res
+
+# Archivos de sistema y temporales
+Thumbs.db
+.DS_Store
+.vscode/
