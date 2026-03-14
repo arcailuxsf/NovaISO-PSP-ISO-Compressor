@@ -154,7 +154,7 @@ void DrawModernUI(HDC hdc) {
     }
 
     // Compression Level Label
-    if (g_ui.meta.format == "ISO") {
+    if (!g_ui.pathIn.empty() && g_ui.meta.format == "ISO") {
         g.DrawString(L"Compression Level:", -1, &fSub, PointF(30, 428), &whiteBrush);
     }
 
@@ -193,7 +193,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         SendMessage(g_ui.hBtnAction, WM_SETFONT, (WPARAM)hFont, TRUE);
 
         // Compression Level Combo
-        g_ui.hComboLevel = CreateWindow("COMBOBOX", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
+        g_ui.hComboLevel = CreateWindow("COMBOBOX", "", WS_CHILD | CBS_DROPDOWNLIST,
             165, 425, 140, 300, hwnd, (HMENU)ID_COMBO_LEVEL, NULL, NULL);
         SendMessage(g_ui.hComboLevel, WM_SETFONT, (WPARAM)hFont, TRUE);
         for(int i=1; i<=9; ++i) {
