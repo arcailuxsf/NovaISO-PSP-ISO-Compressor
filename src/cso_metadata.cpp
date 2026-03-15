@@ -106,8 +106,11 @@ GameMetadata CsoMetadataProcessor::get_metadata(const std::string& path) {
     md.region = "DESCONOCIDO";
     md.size = 0;
 
+    std::ifstream fsize(path, std::ios::binary | std::ios::ate);
+    md.size = fsize.tellg();
+    fsize.close();
+    
     if (!reader.open(path)) return md;
-    md.size = reader.get_total_size();
     
     size_t last_slash = path.find_last_of("\\/");
     std::string filename = (last_slash == std::string::npos) ? path : path.substr(last_slash + 1);

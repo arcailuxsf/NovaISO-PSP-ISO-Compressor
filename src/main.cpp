@@ -45,6 +45,7 @@ struct AppUI {
     
     // Timing and Speed
     double startTime = 0;
+    double lastUpdate = 0;
     std::wstring statsText;
 } g_ui;
 
@@ -70,9 +71,13 @@ void __cdecl CompressionThread(void* p) {
     g_ui.startTime = GetTickCount64() / 1000.0;
     
     auto cb = [](float progress) {
+        double currentTime = GetTickCount64() / 1000.0;
         g_ui.currentProgress = progress;
         
-        double currentTime = GetTickCount64() / 1000.0;
+        // Refresh at ~30 FPS (every 33ms) to prevent flickering/lag
+        if (currentTime - g_ui.lastUpdate < 0.033 && progress < 1.0f) return;
+        g_ui.lastUpdate = currentTime;
+
         double elapsed = currentTime - g_ui.startTime;
         
         if (progress > 0.01f && elapsed > 0.5f) {
@@ -292,7 +297,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         return 0;
     }
 
-    case WM_PROG_UPDATE: InvalidateRect(hwnd, NULL, FALSE); UpdateWindow(hwnd); return 0;
+    case WM_PROG_UPDATE: {
+        // Only invalidate the areas that actually change (Speed text and Progress bar)
+        // Progress area is approx from y=450 to bottom
+        RECT rc = { 30, 450, 800, 500 }; 
+        InvalidateRect(hwnd, &rc, FALSE); 
+        return 0;
+    }
 
     case WM_PROG_DONE:
         g_ui.isProcessing = false;
